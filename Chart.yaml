@@ -1,0 +1,14 @@
+name: tarantool
+home: https://tarantool.org/
+engine: gotpl
+keywords:
+- tarantool
+- database
+version: 0.0.1
+description: Tarantool is a Lua application server integrated with a database management system.
+icon: https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/Redis_Logo.svg/1200px-Redis_Logo.svg.png
+maintainers:
+  - email: mail@igorbelikov.com
+    name: ibelikov
+sources:
+  - https://github.com/tarantool/docker

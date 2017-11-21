@@ -1,0 +1,14 @@
+Tarantool can be accessed via port 3301 on the following DNS name from within your cluster:
+{{ template "tarantool.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+
+{{- if .Values.usePassword }}
+To get your password run:
+
+    TARANTOOL_USER_PASSWORD=$(kubectl get secret --namespace {{ .Release.Namespace }} {{ template "tarantool.fullname" . }} -o jsonpath="{.data.tarantool-password}" | base64 --decode)
+{{- end }}
+
+{{ if and (.Values.networkPolicy.enabled) (not .Values.networkPolicy.allowExternal) }}
+Note: Since NetworkPolicy is enabled, only pods with label
+{{ template "tarantool.fullname" . }}-client=true"
+will be able to connect to tarantool.
+{{- end }}

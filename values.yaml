@@ -1,0 +1,64 @@
+## Tarantool Docker image
+## ref: https://hub.docker.com/r/tarantool/tarantool/
+##
+image: tarantool/tarantool:1.8
+
+## Specify a imagePullPolicy
+## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+##
+imagePullPolicy: IfNotPresent
+
+## Kubernetes service type
+serviceType: ClusterIP
+
+## Use password authentication
+# useSecurity: true
+
+## Tarantool username
+# tarantoolUser: tarantool
+
+## Tarantool password
+## Defaults to a random 10-character alphanumeric string if not set and usePassword is true
+## ref: https://github.com/bitnami/bitnami-docker-tarantool#setting-the-server-password-on-first-run
+##
+# tarantoolPassword:
+
+## Tarantool command arguments
+##
+## Can be used to specify command line arguments, for example:
+##
+## args:
+##  - "tarantool-server"
+##  - "--maxmemory-policy volatile-ttl"
+args:
+
+## Enable persistence using Persistent Volume Claims
+## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+##
+persistence:
+  enabled: true
+
+  ## A manually managed Persistent Volume and Claim
+  ## Requires persistence.enabled: true
+  ## If defined, PVC must be created manually before volume will be bound
+  # existingClaim:
+
+  ## tarantool data Persistent Volume Storage Class
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: "-"
+  accessMode: ReadWriteOnce
+  size: 8Gi
+
+networkPolicy:
+  ## Enable creation of NetworkPolicy resources.
+  ##
+  enabled: false
+
+service:
+  annotations: {}
+  loadBalancerIP:

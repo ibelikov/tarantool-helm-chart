@@ -1,0 +1,77 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "tarantool.fullname" . }}
+  labels:
+    app: {{ template "tarantool.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ template "tarantool.fullname" . }}
+{{- if .Values.podLabels }}
+{{ toYaml .Values.podLabels | indent 8 }}
+{{- end }}
+    spec:
+      {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ template "tarantool.fullname" . }}
+        image: "{{ .Values.image }}"
+        imagePullPolicy: {{ default "" .Values.imagePullPolicy | quote }}
+        {{- if .Values.args }}
+        args:
+{{ toYaml .Values.args | indent 10 }}
+        {{- end }}
+        env:
+        {{- if .Values.useSecurity }}
+        - name: TARANTOOL_USER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "tarantool.fullname" . }}
+              key: tarantool-uesr
+        - name: TARANTOOL_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "tarantool.fullname" . }}
+              key: tarantool-password
+        {{- end }}
+        ports:
+        - name: tarantool
+          containerPort: 3301
+        livenessProbe:
+          exec:
+            command:
+            - tarantool_is_up
+            - ping
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - tarantool_is_up
+            - ping
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        volumeMounts:
+        - name: tarantool-data
+          mountPath: /var/lib/tarantool
+      volumes:
+      - name: tarantool-data
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | default (include "tarantool.fullname" .) }}
+      {{- else }}
+        emptyDir: {}
+      {{- end -}}

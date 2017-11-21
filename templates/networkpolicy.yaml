@@ -1,0 +1,19 @@
+{{- if .Values.networkPolicy.enabled }}
+kind: NetworkPolicy
+apiVersion: {{ template "networkPolicy.apiVersion" . }}
+metadata:
+  name: "{{ template "tarantool.fullname" . }}"
+  labels:
+    app: {{ template "tarantool.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ template "tarantool.fullname" . }}
+  ingress:
+    # Allow inbound connections
+    - ports:
+      - port: 3301
+{{- end }}
